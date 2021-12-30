@@ -13,6 +13,7 @@ public User getUserByEmail(@Param("email") String email);
 	
 	public Long countById(Integer id);
 	
+	//updated
 	@Query("update User u set  u.enabled=?2 Where u.id= ?1")
 	@Modifying
 	public void updateUserEnabled(Integer id , boolean enabled);
