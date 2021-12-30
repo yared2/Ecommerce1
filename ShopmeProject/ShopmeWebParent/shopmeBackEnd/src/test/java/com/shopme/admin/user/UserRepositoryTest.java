@@ -86,4 +86,23 @@ public class UserRepositoryTest {
 		repo.deleteById(userId);
 		
 	}
+	
+	@Test 
+	public void  getUserByEmail() {
+		String email = "ravi@gmail.com";
+		User userByEmail = repo.getUserByEmail(email);
+		assertThat(userByEmail).isNotNull();
+	}
+	@Test
+	public void testcountUserById() {
+		Integer id=5;
+		Long countById = repo.countById(id);
+		assertThat(countById).isEqualTo(1);
+	}
+	@Test
+	public void disableUser() {
+		Integer id =1;
+		repo.updateUserEnabled(id, false);
+	}
+	
 }
