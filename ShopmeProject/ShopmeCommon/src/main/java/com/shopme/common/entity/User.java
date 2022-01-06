@@ -11,10 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.JoinColumn;
 
 @Entity
-@Table(name="user")
+@Table(name="users")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +35,7 @@ public class User {
 	
 	@ManyToMany
 	@JoinTable(
-			name="user_roles",
+			name="users_roles",
 			joinColumns= @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id")
 			)
@@ -135,7 +136,13 @@ public class User {
 		return "User [id="+id+" , email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", roles=" + roles + "]";
 	}
-
+@Transient
+public String getPhotosImagePath() {
+	if(id==null || photo ==null) return "/images/default-image.png";
+	
+	return "/user-photos/" + this.id + "/" + this.photo;
+	
+}
 	
 	
 }

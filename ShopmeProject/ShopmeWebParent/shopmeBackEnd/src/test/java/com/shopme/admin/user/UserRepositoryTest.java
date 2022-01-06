@@ -2,6 +2,7 @@ package com.shopme.admin.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -10,12 +11,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 
-@DataJpaTest
+@DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace=Replace.NONE)
 @Rollback(false)
 public class UserRepositoryTest {
@@ -110,4 +114,27 @@ public class UserRepositoryTest {
 		repo.updateUserEnabled(id, true);
 	}
 	
+	@Test
+	public void testListFirstPage() {
+		int pageNumber =0;
+		int pageSize = 4;
+		Pageable pageable= PageRequest.of(pageNumber, pageSize);
+		Page<User> page = repo.findAll(pageable);
+		 List<User> listUser = page.getContent();
+		 listUser.forEach(user->System.out.println(user));
+		 
+		 assertThat(listUser.size()).isEqualTo(pageSize);
+		
+}
+	
+	@Test
+	public void testsearch() {
+		int pageNumber =0;
+		int pageSize = 4;
+		Pageable pageable= PageRequest.of(pageNumber, pageSize);
+		Page<User> findAll = repo.findAll("bruce", pageable);
+		List<User> content = findAll.getContent();
+		content.forEach(System.out::print);
+		assertThat(content.size()).isGreaterThan(0);
+	}
 }
