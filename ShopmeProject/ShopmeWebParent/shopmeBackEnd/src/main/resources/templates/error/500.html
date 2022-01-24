@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:sec="https://www.thyemleaf.org/thymeleaf-extras-springsecurity5">
+<head th:replace="fragments :: page_head('Error - Shopme Admin')"> </head>
+
+<body>
+
+	<div class="container-fluid">
+	
+<!-- 1nav bar -->	  
+<div th:replace="navigation ::menu"></div>
+	<div class="m-3">		
+<h2>Sorry, Server has encountered  and error while processing  page</h2>
+</div>
+<div th:replace="fragments :: footer"></div>
+		</div>
+	
+
+</body>
+</html>

@@ -1,11 +1,14 @@
-package com.shopme.admin.user;
+package com.shopme.admin.user.controller;
 
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -17,6 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.shopme.admin.FileUploadUtil;
+import com.shopme.admin.security.ShopmeUserDetails;
+import com.shopme.admin.user.UserNotFoundException;
+import com.shopme.admin.user.UserService;
+import com.shopme.admin.user.export.UserCsvExporter;
+import com.shopme.admin.user.export.UserExcelExporter;
+import com.shopme.admin.user.export.UserPdfExporter;
 import com.shopme.common.entity.Role;
 import com.shopme.common.entity.User;
 
@@ -56,7 +65,7 @@ public class userController {
 		model.addAttribute("sortDir", sortDir);
 		model.addAttribute("reverseSortDir", reverseSortDir);
 		model.addAttribute("keyword", keyword);
-		return "users";
+		return "users/users";
 	}
 	
 	@GetMapping("/users/new")
@@ -67,20 +76,31 @@ public class userController {
 		model.addAttribute("user", user);
 		model.addAttribute("listRoles", listRoles);
 		model.addAttribute("pageTitle", "Create New  User");
-		return "user_form";
+		return "users/user_form";
 	}
 	
 	@PostMapping("/users/save")
-	public String saveUser(User user, RedirectAttributes redirectAttributes,
+	public String saveUser(User user,@AuthenticationPrincipal ShopmeUserDetails loggedUser, RedirectAttributes redirectAttributes,
 			@RequestParam("image") MultipartFile multipartFile) throws IOException {
-	
+	if(!multipartFile.isEmpty()) {
 		String fileName = StringUtils.cleanPath( multipartFile.getOriginalFilename());
-		user.setPhoto(fileName);
+			user.setPhoto(fileName);
+		
+	
 		User saveUser = service.save(user);
 		String uploadDir="user-photos/"+saveUser.getId();
+		FileUploadUtil.cleanDir(uploadDir);
 		FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+	}else {
+		if(user.getPhoto().isEmpty()) user.setPhoto(null);
+		service.save(user);
+	}
 		redirectAttributes.addFlashAttribute("message", "The user has been added succesfully");
-		return "redirect:/users";
+	    return getRedirectUrltoAffectedUser(user);
+	}
+	private String getRedirectUrltoAffectedUser(User user) {
+		String 	firstPartofEmail = user.getEmail().split("@")[0];
+		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword="+firstPartofEmail;
 	}
 	
 	@GetMapping("/users/edit/{id}")
@@ -92,7 +112,7 @@ public class userController {
 			List<Role> listRoles = service.listRoles();
 			model.addAttribute("listRoles", listRoles);
 		
-			return "user_form";
+			return "users/user_form";
 		} catch (UserNotFoundException ex) {
 			
 			redirectAttributes.addFlashAttribute("message", ex.getMessage());
@@ -120,5 +140,26 @@ public class userController {
 		redirectAttributes.addFlashAttribute("message", message);
 		return "redirect:/users";
 	}
+@GetMapping("/users/export/csv")
+public void ExportToCsv(HttpServletResponse response) throws IOException {
+	List<User> listAll = service.ListAll();
+	UserCsvExporter export = new UserCsvExporter();
+	export.export(listAll, response);
+}
+
+@GetMapping("/users/export/excel")
+public void ExportToExcel(HttpServletResponse response) throws IOException {
+	List<User> listAll = service.ListAll();
+	UserExcelExporter export = new UserExcelExporter();
+	export.export(listAll, response);
+}
+
+@GetMapping("/users/export/pdf")
+public void ExportToPdf(HttpServletResponse response) throws IOException {
+	List<User> listAll = service.ListAll();
+	UserPdfExporter export = new UserPdfExporter();
+	export.export(listAll, response);
+}
+
 
 }

@@ -35,10 +35,14 @@ public class UserService {
 	private PasswordEncoder passwordEncoder;
 
 	public List<User> ListAll() {
-		return (List<User>) UserRepo.findAll();
+		return (List<User>) UserRepo.findAll(Sort.by("firstName").ascending());
 
 	}
 
+	public User getUserByEmail(String email) {
+		return UserRepo.getUserByEmail(email);
+	}
+	
 	public Page<User> listByPage(Integer pageNum, String sortField, String sortDir, String keyword) {
 
 	
@@ -117,6 +121,20 @@ public class UserService {
 			throw new UserNotFoundException("Could not find any user with ID " + id);
 		}
 		UserRepo.deleteById(id);
+	}
+	public User updateAccount(User userInform) {
+		User userInDB = UserRepo.findById(userInform.getId()).get();
+		if(!userInform.getPassword().isEmpty()) {
+			userInDB.setPassword(userInform.getPassword());
+			encodePassword(userInDB);
+		}
+		if(userInform.getPhoto()!=null) {
+			userInDB.setPhoto(userInform.getPhoto());
+		}
+		userInDB.setFirstName(userInform.getFirstName());
+		userInDB.setLastName(userInform.getLastName());
+		
+		return UserRepo.save(userInDB);
 	}
 
 	// update

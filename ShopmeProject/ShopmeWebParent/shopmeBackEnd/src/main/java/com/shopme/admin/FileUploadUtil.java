@@ -8,15 +8,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+
 import org.springframework.web.multipart.MultipartFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+
 public class FileUploadUtil {
+	
+	private static final   Logger LOGGER = LoggerFactory.getLogger(FileUploadUtil.class);
 	
 	public static void saveFile(String uploadDir,String fileName,MultipartFile multipartFile) throws IOException {
 		Path uploadPath = Paths.get(uploadDir); 
 		//create path from given url 
 		if(!Files.exists(uploadPath)) {
+			
 			 
 			Files.createDirectories(uploadPath);
 		}
@@ -24,10 +32,29 @@ public class FileUploadUtil {
 		try(InputStream insputStream = multipartFile.getInputStream() ){
 			Path filePath = uploadPath.resolve(fileName);
 			Files.copy(insputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+		
 		}catch (IOException ex) {
 			throw new IOException("Could not save file " + fileName,ex);
 		
 		
 	}
+	}
+	public static void cleanDir(String dir) {
+		Path dirPath = Paths.get(dir);
+		
+		try {
+			Files.list(dirPath).forEach(file -> {
+				if (!Files.isDirectory(file)) {
+					try {
+						Files.delete(file);
+					} catch (IOException ex) {
+						LOGGER.error("could not delete file : " +ex);
+					}
+				}
+			});
+		} catch (IOException ex) {
+			LOGGER.error("could not list directory : " +ex);
+		}
 	}
 }
