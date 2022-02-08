@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="https://www.thyemleaf.org/thymeleaf-extras-springsecurity5">
 <head th:replace="fragments :: page_head(${pageTitle})"> </head>
 <body>
 
 	<div class="container-fluid">
-		<div th:replace="navigation ::menu"></div>
+		<div th:replace="navigation::menu"></div>
 		<!-- 2for nav bar -->
 		<div>
 			<h2>Manage user</h2>

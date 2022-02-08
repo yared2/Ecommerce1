@@ -95,7 +95,9 @@ public class userController {
 		if(user.getPhoto().isEmpty()) user.setPhoto(null);
 		service.save(user);
 	}
+	
 		redirectAttributes.addFlashAttribute("message", "The user has been added succesfully");
+	
 	    return getRedirectUrltoAffectedUser(user);
 	}
 	private String getRedirectUrltoAffectedUser(User user) {

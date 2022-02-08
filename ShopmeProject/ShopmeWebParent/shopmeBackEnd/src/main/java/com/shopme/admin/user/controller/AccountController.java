@@ -35,6 +35,7 @@ public class AccountController {
 	@PostMapping("/account/update")
 	public String saveDetails(User user,@AuthenticationPrincipal ShopmeUserDetails loggedUser, RedirectAttributes redirectAttributes,
 			@RequestParam("image") MultipartFile multipartFile) throws IOException {
+	
 		if (!multipartFile.isEmpty()) {
 			String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 			user.setPhoto(fileName);
@@ -51,6 +52,7 @@ public class AccountController {
 		
 		loggedUser.setFirstname(user.getFirstName());
 		loggedUser.setLastname(user.getLastName());
+	
 		redirectAttributes.addFlashAttribute("message", "Your account details have been saved succesfully");
 		return "redirect:/account";
 	}
