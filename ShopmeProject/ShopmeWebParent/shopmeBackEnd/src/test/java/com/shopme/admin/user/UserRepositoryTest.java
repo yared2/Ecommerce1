@@ -23,13 +23,13 @@ import com.shopme.common.entity.User;
 @AutoConfigureTestDatabase(replace=Replace.NONE)
 @Rollback(false)
 public class UserRepositoryTest {
-	
+
 	@Autowired
 	private UserRepository repo;
-	
+
 	@Autowired
 	private TestEntityManager entityManager;
-	
+
 	@Test
 	public void testCreatUser() {
 		Role roleAdmin = entityManager.find(Role.class, 1);
@@ -40,7 +40,7 @@ public class UserRepositoryTest {
 	}
 	@Test
 	public void testCreatUserTwoRole() {
-	
+
 		User  UserRavi = new User("ravi@gmail.com","ravi2020","Ravi","Kumar");
 	Role roleEditor = new Role(3);
 	Role roleAssistant = new Role(5);
@@ -48,29 +48,29 @@ public class UserRepositoryTest {
 	UserRavi.addRole(roleAssistant);
 	repo.save(UserRavi);
 		assertThat(UserRavi.getId()).isGreaterThan(0);
-		
+
 	}
-	
+
 	@Test
 	public void listAlluser() {
 		Iterable<User> findAll = repo.findAll();
 		findAll.forEach(user->System.out.println(user));
 	}
- 	
+
 	@Test
 	public void getUserById() {
 		Optional<User> findById = repo.findById(1);
 		System.out.println(findById.get());
 	assertThat(findById).isNotNull();
-		
+
 	}
-	
+
 	@Test
 	public void testUpdateUserDetail() {
 		User user = repo.findById(1).get();
 		user.setEnabled(true);
 		user.setEmail("Namjavaprogrammer@gmail.com");
-		
+
 		repo.save(user);
 	}
 	@Test
@@ -80,18 +80,18 @@ public class UserRepositoryTest {
 		Role roleSalesperson = new Role(2);
 		user.getRoles().remove(roleEditor);
 		user.addRole(roleSalesperson);
-		
+
 		repo.save(user);
 	}
-	
+
 	@Test
 	public void deletUser() {
 		Integer userId=2;
 		repo.deleteById(userId);
-		
+
 	}
-	
-	@Test 
+
+	@Test
 	public void  getUserByEmail() {
 		String email = "ravi@gmail.com";
 		User userByEmail = repo.getUserByEmail(email);
@@ -113,7 +113,7 @@ public class UserRepositoryTest {
 		Integer id =5;
 		repo.updateUserEnabled(id, true);
 	}
-	
+
 	@Test
 	public void testListFirstPage() {
 		int pageNumber =0;
@@ -122,11 +122,11 @@ public class UserRepositoryTest {
 		Page<User> page = repo.findAll(pageable);
 		 List<User> listUser = page.getContent();
 		 listUser.forEach(user->System.out.println(user));
-		 
+
 		 assertThat(listUser.size()).isEqualTo(pageSize);
-		
+
 }
-	
+
 	@Test
 	public void testsearch() {
 		int pageNumber =0;

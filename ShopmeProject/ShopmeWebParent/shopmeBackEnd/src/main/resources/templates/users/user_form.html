@@ -91,28 +91,14 @@
 				
 			</form>
 
-		<div class="modal fade test-center" id="modalDialog">
-			<div class=modal-dialog>
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title" id="modalTitle">Warning</h4>
-						<button type="button" class="close" data-dismiss="modal">&times</button>
-
-					</div>
-					<div class="modal-body">
-						<span id="modalBody"></span>
-
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-danger" data-dismiss="modal">close</button>
-
-					</div>
-
-				</div>
-			</div>
-		</div>
+	
+		
+		<div th:replace="modal_fragments :: modal_dialog"></div>
 
 <div th:replace="fragments :: footer"></div>
+
+
+
 		</div>
 	
 
@@ -131,10 +117,10 @@ modeluURL="[[@{/}]]";
 		if(response=="OK"){
 			form.submit();
 		}else if (response == "Duplicate"){
-			showModelDialog("Warrning","There is another user having the email :"+ userEmail);
+			showWarningModal("There is another user having the email :"+ userEmail);
 		
 		}else{
-			showModelDialog("Error","Unknown response from server");
+			showErrorModal("Unknown response from server");
 		}
 		
 	}).fail(function(){
@@ -143,11 +129,8 @@ modeluURL="[[@{/}]]";
 		return false
 	}
 	
-	function showModelDialog(title,  message){
-		$("#modalTitle").text(title);
-		$("#modalBody").text(message);
-		$("#modalDialog").modal();
-	}
+
+	
 </script>
 <script th:src="@{/js/common.form.js}"></script>
 </body>

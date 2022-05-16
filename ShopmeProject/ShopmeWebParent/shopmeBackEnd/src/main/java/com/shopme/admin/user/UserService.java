@@ -1,9 +1,7 @@
 package com.shopme.admin.user;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -12,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,21 +39,21 @@ public class UserService {
 	public User getUserByEmail(String email) {
 		return UserRepo.getUserByEmail(email);
 	}
-	
+
 	public Page<User> listByPage(Integer pageNum, String sortField, String sortDir, String keyword) {
 
-	
+
 		Sort sort = Sort.by(sortField);
 		sort =sortDir.equals("asc") ?sort.ascending() :sort.descending();
-		
-		
+
+
 		Pageable pageable = PageRequest.of(pageNum - 1, USERS_PER_PAGE, sort);
 
 		if (keyword != null) {
-		
+
 		return	UserRepo.findAll(keyword, pageable);
-		
-			
+
+
 		}
 		return UserRepo.findAll(pageable);
 	}
@@ -133,7 +130,7 @@ public class UserService {
 		}
 		userInDB.setFirstName(userInform.getFirstName());
 		userInDB.setLastName(userInform.getLastName());
-		
+
 		return UserRepo.save(userInDB);
 	}
 

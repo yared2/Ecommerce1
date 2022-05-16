@@ -31,35 +31,36 @@ import com.shopme.common.entity.User;
 
 @Controller
 public class userController {
-	
+
 	@Autowired
 	private UserService service;
-	
+
 	@GetMapping("/users")
 	public String listFirstPage(Model model) {
 		return listByPage(1,"firstName","asc",model,null);
 	}
 	@GetMapping("/users/page/{pageNum}")
-	public String  listByPage(@PathVariable("pageNum") int pageNum,@Param("sortField") String sortField, 
+	public String  listByPage(@PathVariable("pageNum") int pageNum,@Param("sortField") String sortField,
 			@Param("sortDir") String  sortDir ,Model model,
 			 @Param("keyword")String keyword) {
+
 		
 		Page<User> page = service.listByPage(pageNum,sortField,sortDir,keyword);
-	
+
 		List<User> listusers = page.getContent();
-		
-	    long startCount =(pageNum-1)*UserService.USERS_PER_PAGE+1;  
+
+	    long startCount =(pageNum-1)*UserService.USERS_PER_PAGE+1;
 	    long endCount = startCount+ UserService.USERS_PER_PAGE-1;
 	    if(endCount > page.getTotalElements()) {
 		endCount=page.getTotalElements();
 	   }
-	  
+
 	    String reverseSortDir = sortDir.equals("asc") ? "desc":"asc";
-	    model.addAttribute("currentPage", pageNum); 
+	    model.addAttribute("currentPage", pageNum);
 	    model.addAttribute("totalPage", page.getTotalPages());
 	    model.addAttribute("startCount", startCount);
 	    model.addAttribute("endCount", endCount);
-	    model.addAttribute("totalItems", page.getTotalElements()); 
+	    model.addAttribute("totalItems", page.getTotalElements());
 		model.addAttribute("listusers", listusers);
 		model.addAttribute("sortField", sortField);
 		model.addAttribute("sortDir", sortDir);
@@ -67,7 +68,7 @@ public class userController {
 		model.addAttribute("keyword", keyword);
 		return "users/users";
 	}
-	
+
 	@GetMapping("/users/new")
 		public String newUser(Model model) {
 		List<Role> listRoles = service.listRoles();
@@ -78,15 +79,15 @@ public class userController {
 		model.addAttribute("pageTitle", "Create New  User");
 		return "users/user_form";
 	}
-	
+
 	@PostMapping("/users/save")
 	public String saveUser(User user,@AuthenticationPrincipal ShopmeUserDetails loggedUser, RedirectAttributes redirectAttributes,
 			@RequestParam("image") MultipartFile multipartFile) throws IOException {
 	if(!multipartFile.isEmpty()) {
 		String fileName = StringUtils.cleanPath( multipartFile.getOriginalFilename());
 			user.setPhoto(fileName);
-		
-	
+
+
 		User saveUser = service.save(user);
 		String uploadDir="user-photos/"+saveUser.getId();
 		FileUploadUtil.cleanDir(uploadDir);
@@ -95,16 +96,16 @@ public class userController {
 		if(user.getPhoto().isEmpty()) user.setPhoto(null);
 		service.save(user);
 	}
-	
+
 		redirectAttributes.addFlashAttribute("message", "The user has been added succesfully");
-	
+
 	    return getRedirectUrltoAffectedUser(user);
 	}
 	private String getRedirectUrltoAffectedUser(User user) {
 		String 	firstPartofEmail = user.getEmail().split("@")[0];
 		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword="+firstPartofEmail;
 	}
-	
+
 	@GetMapping("/users/edit/{id}")
 	public String editUser(@PathVariable("id") Integer id,Model model,RedirectAttributes redirectAttributes) {
 		try {
@@ -113,10 +114,10 @@ public class userController {
 			model.addAttribute("pageTitle", "Edit User"+"(ID: " + user.getId()+")");
 			List<Role> listRoles = service.listRoles();
 			model.addAttribute("listRoles", listRoles);
-		
+
 			return "users/user_form";
 		} catch (UserNotFoundException ex) {
-			
+
 			redirectAttributes.addFlashAttribute("message", ex.getMessage());
 		}
 		return "redirect:/users";
@@ -129,12 +130,12 @@ public class userController {
 		} catch (UserNotFoundException ex) {
 			redirectAttributes.addFlashAttribute("message", ex.getMessage());
 		}
-		
+
 		return "redirect:/users";
 	}
 
 	@GetMapping("/users/{id}/enabled/{status}")
-	public  String updateUserEnableStatus(@PathVariable("id") Integer id , @PathVariable("status") boolean enabled, 
+	public  String updateUserEnableStatus(@PathVariable("id") Integer id , @PathVariable("status") boolean enabled,
 			RedirectAttributes redirectAttributes) {
 		service.updateUserEnabledStatus(id, enabled);
 		String status= enabled? "enabled":"disabled";

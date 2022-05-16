@@ -16,43 +16,44 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	@Override
 	@Bean
 	public UserDetailsService userDetailsService() {
 		return new ShopmeUserDetailService();
 	}
-	
+
 	@Bean
 	public PasswordEncoder PasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
 	public DaoAuthenticationProvider authenticationProvider(){ //telling spring we are using database based authenticatiob
-		
+
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService());
 		authenticationProvider.setPasswordEncoder(PasswordEncoder());
 		return  authenticationProvider;
 	}
-	
-	
-	
-	@Override  //to configur DaoAuthenticationProvider 
+
+
+
+	@Override  //to configur DaoAuthenticationProvider
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(authenticationProvider());
-		
+
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
-	
+
+
 		http.authorizeRequests()
 		.antMatchers("/users/**").hasAuthority("Admin")
 		.antMatchers("/categories/**").hasAnyAuthority("Editor","Admin")
 		.anyRequest()
 		.authenticated()
 		.and()
-		.formLogin()   // specify login form 
+		.formLogin()   // specify login form
 		   .loginPage("/login") //the login form  permite to all
 		   .usernameParameter("email")  // change the custome username to email spring login custome is userName
 		   .permitAll()

@@ -17,10 +17,10 @@ import com.shopme.common.entity.Role;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Rollback(false)
 public class RoleRepositoryTest {
-	 
+
 	@Autowired
 	private RoleRepository repo;
-	
+
 	@Test
 	public void testCreateFirstRole() {
 		Role roleAdmin = new Role("Admin","manage everything");
@@ -31,11 +31,11 @@ public class RoleRepositoryTest {
 	public void testCreateRestRole() {
 		Role roleSelaseperson = new Role("SalesPerosn","manage product price,customer,shipping"
 				+ ",order and sales report");
-		
+
 		Role roleEditor = new Role("Editor","manage categories, brands,articles and menu");
 		Role roleShipper = new Role("Shipper","view products,view orders and update order status");
 		Role roleAssistant = new Role("Assistant","manag questions and reviews");
-		
+
 repo.saveAll(List.of(roleSelaseperson, roleEditor, roleShipper, roleAssistant));
 
 	}

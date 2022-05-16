@@ -24,25 +24,9 @@
 		<div th:if="${message !=null}" class="alert alert-success text-center">
 			[[${message}]]</div>
 
-		<div>
-			<form th:action="@{/users/page/1}" class="form-inline m-3">
-				<input type="hidden" name="sortField" th:value='${sortField}' /> <input
-					type="hidden" name="sortDir" th:value='${sortDir}' /> Filter:
-				&nbsp; <input type="search" name="keyword" th:value="${keyword}"
-					required class="form-control" /> &nbsp;&nbsp; 
-					<button type="submit"
-					value="Search" class="btn btn-primary" >
-					<i class ="fas fa-search "></i> 
-				</button>	
-					&nbsp;&nbsp; 
-					<button
-					type="button" value="Clear" class="btn btn-secondary"
-					onclick="clearFilter()" >
-					<i class="fas fa-eraser"></i>
-					</button>
-			</form>
-
-		</div>
+	
+<div th:replace ="fragments :: search_form('/users/page/1')" />
+		
 		<div class="full-details">
 			<table
 				class="table table-bordered table-striped table-hover table-responsive-xl">
@@ -77,7 +61,8 @@
 						<td><a th:if="${user.enabled==true}"
 							class="fas fa-check-circle fa-2x icon-green"
 							th:href="@{'/users/'+${user.id}+'/enabled/false'}"
-							title="disable this user"></a> <a th:if="${user.enabled==false}"
+							title="disable this user"></a>
+							 <a th:if="${user.enabled==false}"
 							class="fas fa-circle fa-2x  icon-dark"
 							th:href="@{'/users/'+${user.id}+'/enabled/true'}"
 							title="enable this user"></a></td>
@@ -133,46 +118,7 @@
 		</div>
 		
 
-		<div class="text-center m-1" th:if="${totalItems >0}">
-			<span>Showing users # [[${startCount}]] to [[${endCount}]] of
-				[[${totalItems}]]</span>
-
-		</div>
-		<div class="text-center m-1" th:unless="${totalItems >0}">
-			<span>No Users found </span>
-		</div>
-
-		<div th:if="${totalPage > 1}" >
-			<nav>
-				<ul class="pagination justify-content-center  flex-wrap"  >
-					<li
-						th:class="${currentPage > 1 ? 'page-item' :'page-item disabled'} ">
-
-						<a th:replace="fragments::page_link(1,'Frist')"></a>
-
-					</li>
-
-					<li
-						th:class="${currentPage > 1 ? 'page-item' :'page-item disabled'} ">
-						<a th:replace="fragments::page_link(${currentPage-1},'Previous')"></a>
-					</li>
-
-					<li th:class="${currentPage!=i ? 'page-item' :'page-item active'} "
-						th:each="i :${#numbers.sequence(1,totalPage)}"><a
-						th:replace="fragments::page_link(${i},${i})"></a></li>
-
-					<li
-						th:class="${currentPage < totalPage ? 'page-item' :'page-item disabled'} ">
-						<a th:replace="fragments::page_link(${currentPage+1},'Next')"></a>
-
-					</li>
-					<li
-						th:class="${currentPage < totalPage ? 'page-item' :'page-item disabled'} ">
-						<a th:replace="fragments::page_link(${totalPage},'Last')"></a>
-				</ul>
-			</nav>
-
-		</div>
+		
 
 
 		<div class="modal fade test-center" id="confirmModal">
@@ -196,6 +142,8 @@
 				</div>
 			</div>
 		</div>
+		
+		  <div th:replace="fragments :: pagination('/users','users')"></div>
 
 		<!-- 3footer -->
      <div th:replace="fragments :: footer"></div>
